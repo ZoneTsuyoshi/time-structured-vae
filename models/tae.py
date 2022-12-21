@@ -1,4 +1,4 @@
-from .base import BaseModel
+from .base import *
 
 
 class TAE(BaseModel):
@@ -6,14 +6,14 @@ class TAE(BaseModel):
                  latent_dim:int=1, hidden_dim:int=50, n_layers:int=2, sliding_window:bool=True,
                  activation:str="LeakyReLU", dropout_ratio:float=0., optimizer:str="Adam", loss:str="MSELoss",
                  verbose:bool=True,　print_every:int=10, cuda:Union[bool, int]=True, save_dir=None):
-        super(BaseModel, self).__init__(input_dim, lag_time, n_epochs, batch_size, learning_rate, latent_dim, hidden_dim, 
-                                       n_layers, sliding_window, activation, dropout_ratio, optimizer, loss, verbose, print_every,
-                                       cuda, save_dir, False, False)
+        super(TAE, self).__init__(input_dim, lag_time, n_epochs, batch_size, learning_rate, latent_dim, hidden_dim, 
+                                n_layers, sliding_window, activation, dropout_ratio, optimizer, loss, verbose, print_every,
+                                cuda, save_dir, False, False)
         
         def forward(self, x):
             z = self.encoder(x)
             o = self.decoder(z)
-            return o, z
+            return o
             
             
         def compute_loss(self, X:np.ndarray):
@@ -25,7 +25,7 @@ class TAE(BaseModel):
             x = X[:, :, 0]
             y = X[:, :, 1]
             
-            o, z = self(x) #(ns,dx),(ns,dz)
+            o = self(x) #(ns,dx)
             rec_loss = self.loss_fn(o, y.detach())
             
             return [rec_loss, rec_loss]

@@ -13,6 +13,7 @@ from sklearn import model_selection
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
@@ -144,5 +145,5 @@ class BaseModel(nn.Module, BaseEstimator):
 
     def _reparameterized_sample(self, mean:torch.tensor, logstd:torch.tensor) -> torch.tensor:
         """using std to sample"""
-        eps = torch.FloatTensor(std.size()).normal_().to(self.device)
+        eps = torch.FloatTensor(logstd.size()).normal_().to(self.device)
         return eps.mul(logstd.exp()).add_(mean)
