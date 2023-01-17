@@ -5,8 +5,7 @@ The included methods are following:
 |Method|Reference|
 |:---|:---|
 |TAE|Wehmeyer, C.; Noé, F. Time-lagged autoencoders: Deep learning of slow collective variables for molecular kinetics. [J. Chem. Phys.](https://aip.scitation.org/doi/10.1063/1.5011399) 2018, 148, 241703.|
-|TVAE|Hoffmann, M.; Scherer, M. K.; Hempel, T.; Mardt, A.; de Silva, B.; Husic, B. E.;
-Klus, S.; Wu, H.; Kutz, J. N.; Brunton, S.; Noé, F. Deeptime: a Python library for machine learning dynamical models from time series data. [Machine Learning: Science and Technology](https://iopscience.iop.org/article/10.1088/2632-2153/ac3de0) 2021.|
+|TVAE|Hoffmann, M.; Scherer, M. K.; Hempel, T.; Mardt, A.; de Silva, B.; Husic, B. E.; Klus, S.; Wu, H.; Kutz, J. N.; Brunton, S.; Noé, F. Deeptime: a Python library for machine learning dynamical models from time series data. [Machine Learning: Science and Technology](https://iopscience.iop.org/article/10.1088/2632-2153/ac3de0) 2021.|
 |VDE|Hernándeza, C. X.; Wayment-Steele, H. K.; Sultan, M. M.; Husic, B. E.; Pande, V. S. Variational encoding of complex dynamics. [Phys. Rev. E](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.97.062412) 2018, 97, 062412.|
 |tsVAE (ours)||
 |tsTVAE (ours)||
