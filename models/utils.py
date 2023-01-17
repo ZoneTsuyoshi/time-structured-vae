@@ -8,17 +8,17 @@ def construct_dense_network(input_dim:int, output_dim:int=None, hidden_dim:int=5
         net = [nn.Linear(input_dim, output_dim)]
     else:
         net = [nn.Linear(input_dim, hidden_dim)]
-        if dropout>0.:
+        if dropout_ratio>0.:
             net.append(nn.Dropout(dropout_ratio))
         for i in range(n_layers-1):
-            net += [getattr(nn, activation),
+            net += [getattr(nn, activation)(),
                     nn.Linear(hidden_dim, hidden_dim)]
-            if dropout>0.:
+            if dropout_ratio>0.:
                 net.append(nn.Dropout(dropout_ratio))
-        net += [getattr(nn, activation),
+        net += [getattr(nn, activation)(),
                 nn.Linear(hidden_dim, output_dim)]
-    if output_activation_class is not None:
-        net.append(getattr(nn, output_activation))
+    if output_activation is not None:
+        net.append(getattr(nn, output_activation)())
     return nn.Sequential(*net)
 
 
