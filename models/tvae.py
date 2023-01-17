@@ -32,6 +32,6 @@ class TVAE(BaseModel):
         y = X[:, :, 1]
 
         o, _, kld_loss = self(x) #(ns,dx),(ns,dz)
-        rec_loss = self.loss_fn(o, y.detach())
+        rec_loss = self.loss_fn(o, y.detach()).sum(-1).mean()
 
         return [rec_loss + kld_loss, rec_loss, kld_loss]

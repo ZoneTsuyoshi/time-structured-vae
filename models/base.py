@@ -58,7 +58,7 @@ class BaseModel(nn.Module, BaseEstimator):
                 os.path.exists(save_dir)
 
         self.optimizer = getattr(optim, optimizer)(self.parameters(), lr=learning_rate)
-        self.loss_fn = getattr(nn, loss)()
+        self.loss_fn = getattr(nn, loss)(reduction="none")
         self.loss_name_list = ["main", loss]
         
         self.is_fitted = False

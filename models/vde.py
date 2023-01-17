@@ -24,7 +24,7 @@ class VDE(TVAE):
 
         o, zx, kld_loss = self(x) #(ns,dx),(ns,dz)
         _, zy, _ = self(y) #(ns,dz)
-        rec_loss = self.loss_fn(o, y.detach())
+        rec_loss = self.loss_fn(o, y.detach()).sum(-1).mean()
         sa_loss = - compute_sample_correlation(zx, zy)
 
         return [rec_loss + kld_loss + sa_loss, rec_loss, kld_loss, sa_loss]

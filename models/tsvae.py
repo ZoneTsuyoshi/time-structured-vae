@@ -59,7 +59,7 @@ class tsVAE(TVAE):
         X = X.permute(2,0,1).to(self.device)
 
         o, loss_list = self(X) #(2,ns,dx)
-        rec_loss = self.loss_fn(o, X.detach())
+        rec_loss = self.loss_fn(o, X.detach()).sum(-1).mean()
         loss_list = [rec_loss] + loss_list
 
         return [sum(loss_list)] + loss_list

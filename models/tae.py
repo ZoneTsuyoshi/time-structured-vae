@@ -27,7 +27,7 @@ class TAE(BaseModel):
         y = X[:, :, 1]
 
         o = self(x) #(ns,dx)
-        rec_loss = self.loss_fn(o, y.detach())
+        rec_loss = self.loss_fn(o, y.detach()).sum(-1).mean()
 
         return [rec_loss, rec_loss]
         
