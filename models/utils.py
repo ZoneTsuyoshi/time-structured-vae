@@ -1,3 +1,4 @@
+import math
 import torch
 import torch.nn as nn
 
@@ -44,7 +45,7 @@ def compute_autocorrelation_loss(alpha, prior="Beta"):
         autocorrelation_loss = - (2 * torch.log(alpha) - math.log(3))
     elif prior=="exp":
         autocorrelation_loss = - torch.log(torch.exp(math.log(3)*alpha)-1)
-    return autocorrelation_loss
+    return autocorrelation_loss.sum()
 
 
 def kld_between_two_Gaussians(mean_1, logstd_1, mean_2, logstd_2, dim=-1, keepdim=False):

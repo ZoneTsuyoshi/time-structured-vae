@@ -14,7 +14,7 @@ class tsVAE(TVAE):
                                 cuda, save_dir)
         self.loss_name_list.append("KLD Transition Loss")
         
-        if type(autocorrelation) == int:
+        if type(autocorrelation) == float:
             autocorrelation = [autocorrelation]
 
         if autocorrelation_mode=="adjusted":
@@ -22,13 +22,13 @@ class tsVAE(TVAE):
                 decaying_time = [decaying_time]
             autocorrelation = [np.sqrt(1 - lagtime / st) for st in decaying_time]
 
-        self.alpha = torch.Tensor(autocorrelation * torch.ones(self.latent_dim)).to(self.device)
+        self.alpha = (torch.Tensor(autocorrelation) * torch.ones(self.latent_dim)).to(self.device)
         
         self.learning_autocorrelation = autocorrelation_mode=="learned"
         if self.learning_autocorrelation:
             self.autocorrelation_prior = autocorrelation_prior
             self.alpha = nn.Parameter(torch.logit(2*self.alpha.clamp(0,1)-1), requires_grad=True)
-            self.sigmoid = lambda x:0.5*(F.sigmoid(x)+1)
+            self.sigmoid = lambda x:0.5*(torch.sigmoid(x)+1)
             self.loss_name_list += ["Negative Autocorrelation Log-Prior"]
         else:
             self.sigmoid = nn.Identity()
