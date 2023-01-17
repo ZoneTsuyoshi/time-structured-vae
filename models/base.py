@@ -55,7 +55,7 @@ class BaseModel(nn.Module, BaseEstimator):
         if self.save:
             self.save_dir = save_dir
             if not os.path.exists(save_dir):
-                os.path.exists(save_dir)
+                os.mkdir(save_dir)
 
         self.optimizer = getattr(optim, optimizer)(self.parameters(), lr=learning_rate)
         self.loss_fn = getattr(nn, loss)(reduction="none")
@@ -135,6 +135,9 @@ class BaseModel(nn.Module, BaseEstimator):
                         print_content += " {}:{:.4f}".format(loss_name, valid_loss[j])
                 print(print_content)
 
+        if self.save:
+            torch.save(self.state_dict(), os.path.join(self.save_dir, 'state_dict.pth'))
+            torch.save(self.optimizer.state_dict(), os.path.join(self.save_dir, 'optimizer_state_dict.pth'))
         self.is_fitted = True
         
         
