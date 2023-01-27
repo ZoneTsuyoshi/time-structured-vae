@@ -19,6 +19,7 @@ We use following environment:
 - mdshare 0.4.2 (optional for fetching data)
 - pyemma 2.5.7 (optional for MSM analysis)
 - matplotlib 3.3.4 (optional for graphics)
+- scikit-learn 0.18 (optional for preprocessing)
 
 
 ## Usage
