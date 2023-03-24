@@ -20,6 +20,7 @@ We use following environment:
 - pyemma 2.5.7 (optional for MSM analysis)
 - matplotlib 3.3.4 (optional for graphics)
 - scikit-learn 0.18 (optional for preprocessing)
+- scipy 1.2.1 (used in adjusted mode of tsVAE and tsTVAE, but can be used 1.96 instead of $\sqrt2\mathrm{erf}^{-1}(0.95)$ in the models)
 
 
 ## Usage

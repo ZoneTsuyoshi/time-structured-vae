@@ -1,10 +1,11 @@
 from .tvae import *
+from scipy import special
 from .utils import kld_gauss_normal, kld_between_two_Gaussians, compute_autocorrelation_loss
 
 
 class tsVAE(TVAE):
     def __init__(self, input_dim:int, lagtime:int=1, autocorrelation:float=0.999, autocorrelation_mode:str="fixed",
-                 decaying_time:int=1000, autocorrelation_prior:str="Beta",
+                 decaying_time:int=10000, significance_level:float=0.95, autocorrelation_prior:str="Beta",
                  beta:float=0., n_epochs:int=100, batch_size:int=256, learning_rate:float=1e-3,
                  latent_dim:int=1, hidden_dim:int=50, n_layers:int=2, sliding_window:bool=True,
                  activation:str="LeakyReLU", dropout_ratio:float=0., optimizer:str="Adam", loss:str="MSELoss",
@@ -20,7 +21,7 @@ class tsVAE(TVAE):
         if autocorrelation_mode=="adjusted":
             if type(decaying_time) == int:
                 decaying_time = [decaying_time]
-            autocorrelation = [np.sqrt(1 - lagtime / st) for st in decaying_time]
+            autocorrelation = [np.power(np.sqrt(2)*special.erfinv(significance_level) / np.sqrt(st), lagtime / st) for st in decaying_time]
 
         self.alpha = (torch.Tensor(autocorrelation) * torch.ones(self.latent_dim)).to(self.device)
         
