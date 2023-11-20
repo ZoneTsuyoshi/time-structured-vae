@@ -7,6 +7,7 @@ The included methods are following:
 |TAE|Wehmeyer, C.; Noé, F. Time-lagged autoencoders: Deep learning of slow collective variables for molecular kinetics. [J. Chem. Phys.](https://aip.scitation.org/doi/10.1063/1.5011399) 2018, 148, 241703.|
 |TVAE|Hoffmann, M.; Scherer, M. K.; Hempel, T.; Mardt, A.; de Silva, B.; Husic, B. E.; Klus, S.; Wu, H.; Kutz, J. N.; Brunton, S.; Noé, F. Deeptime: a Python library for machine learning dynamical models from time series data. [Machine Learning: Science and Technology](https://iopscience.iop.org/article/10.1088/2632-2153/ac3de0) 2021.|
 |VDE|Hernándeza, C. X.; Wayment-Steele, H. K.; Sultan, M. M.; Husic, B. E.; Pande, V. S. Variational encoding of complex dynamics. [Phys. Rev. E](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.97.062412) 2018, 97, 062412.|
+|SRV|Chen, W.; Sidky, H.; Ferguson, A. L. Nonlinear Discovery of Slow Molecular Modes using State-Free Reversible VAMPnets [J. Chem. Phys.](https://pubs.aip.org/aip/jcp/article/150/21/214114/197931/Nonlinear-discovery-of-slow-molecular-modes-using) 2019, 150, 214114.|
 |tsVAE (ours)||
 |tsTVAE (ours)||
 
@@ -20,7 +21,7 @@ We use following environment:
 - pyemma 2.5.7 (optional for MSM analysis)
 - matplotlib 3.3.4 (optional for graphics)
 - scikit-learn 0.18 (optional for preprocessing)
-- scipy 1.2.1 (used in adjusted mode of tsVAE and tsTVAE, but can be used 1.96 instead of $\sqrt2\mathrm{erf}^{-1}(0.95)$ in the models)
+- scipy 1.2.1 (used in SRV, tsVAE, and tsTVAE)
 
 
 ## Usage

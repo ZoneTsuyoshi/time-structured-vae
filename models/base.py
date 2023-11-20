@@ -6,7 +6,8 @@
 # All rights reserved.
 
 import os
-from typing import Union
+from typing import Union, List
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 from sklearn import model_selection
@@ -23,12 +24,11 @@ from msmbuilder.base import BaseEstimator
 from .utils import construct_dense_network
 
 
-class BaseModel(nn.Module, BaseEstimator):
-    def __init__(self, input_dim:int, lagtime:int=1, n_epochs:int=100, batch_size:int=256, learning_rate:float=1e-3,
-                 latent_dim:int=1, hidden_dim:int=50, n_layers:int=2, sliding_window:bool=True,
-                 activation:str="LeakyReLU", dropout_ratio:float=0., optimizer:str="Adam", loss:str="MSELoss",
-                 verbose:bool=True, print_every:int=10, cuda:Union[bool, int]=True, save_dir=None,
-                 encoder_stochastic:bool=False, decoder_stochastic:bool=False):
+
+class BaseModel(nn.Module, BaseEstimator, metaclass=ABCMeta):
+    def __init__(self, input_dim:int, lagtime:int=1, n_epochs:int=100, batch_size:int=256,
+                 latent_dim:int=1, sliding_window:bool=True, loss:str="MSELoss",
+                 verbose:bool=True, print_every:int=10, cuda:Union[bool, int]=True, save_dir=None):
         super(BaseModel, self).__init__()
         
         self.input_dim = input_dim
@@ -40,16 +40,12 @@ class BaseModel(nn.Module, BaseEstimator):
         self.verbose = verbose
         self.print_every = print_every
         
-        self.encoder = construct_dense_network(input_dim, (1 + encoder_stochastic) * latent_dim, hidden_dim, n_layers, activation, dropout_ratio)
-        self.decoder = construct_dense_network(latent_dim, (1 + decoder_stochastic) * input_dim, hidden_dim, n_layers, activation, dropout_ratio)
-        
         if cuda:
             cuda = 0 # set device 0
         if type(cuda)==int:
             self.device = torch.device("cuda", cuda)
         else:
             self.device = torch.device("cpu")
-        self.to(self.device)
         
         self.save = save_dir is not None
         if self.save:
@@ -57,10 +53,7 @@ class BaseModel(nn.Module, BaseEstimator):
             if not os.path.exists(save_dir):
                 os.mkdir(save_dir)
 
-        self.optimizer = getattr(optim, optimizer)(self.parameters(), lr=learning_rate)
-        self.loss_fn = getattr(nn, loss)(reduction="none")
         self.loss_name_list = ["main", loss]
-        
         self.is_fitted = False
         
         
@@ -84,8 +77,9 @@ class BaseModel(nn.Module, BaseEstimator):
             return DataLoader(torch.from_numpy(t), batch_size=self.batch_size, shuffle=True), None
     
     
-    # def compute_loss(self, X:np.array):
-    #     pass
+    @abstractmethod
+    def _compute_loss(self, X: torch.Tensor) -> List[torch.Tensor]:
+        pass
     
     
     def _train(self, data:DataLoader) -> np.ndarray:
@@ -157,3 +151,17 @@ class BaseModel(nn.Module, BaseEstimator):
         """using std to sample"""
         eps = torch.FloatTensor(logstd.size()).normal_().to(self.device)
         return eps.mul(logstd.exp()).add_(mean)
+
+
+class BaseEncoderDecoder(BaseModel):
+    def __init__(self, input_dim:int, lagtime:int=1, n_epochs:int=100, batch_size:int=256, learning_rate:float=1e-3,
+                 latent_dim:int=1, hidden_dim:int=50, n_layers:int=2, sliding_window:bool=True,
+                 activation:str="LeakyReLU", dropout_ratio:float=0., optimizer:str="Adam", loss:str="MSELoss",
+                 verbose:bool=True, print_every:int=10, cuda:Union[bool, int]=True, save_dir=None,
+                 encoder_stochastic:bool=False, decoder_stochastic:bool=False):
+        super(BaseEncoderDecoder, self).__init__(input_dim, lagtime, n_epochs, batch_size, latent_dim, sliding_window, loss, verbose, print_every, cuda, save_dir)
+        self.encoder = construct_dense_network(input_dim, (1 + encoder_stochastic) * latent_dim, hidden_dim, n_layers, activation, dropout_ratio)
+        self.decoder = construct_dense_network(latent_dim, (1 + decoder_stochastic) * input_dim, hidden_dim, n_layers, activation, dropout_ratio)
+        self.to(self.device)
+        self.optimizer = getattr(optim, optimizer)(self.parameters(), lr=learning_rate)
+        self.loss_fn = getattr(nn, loss)(reduction="none")

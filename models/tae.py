@@ -1,7 +1,7 @@
 from .base import *
 
 
-class TAE(BaseModel):
+class TAE(BaseEncoderDecoder):
     def __init__(self, input_dim:int, lagtime:int=1, n_epochs:int=100, batch_size:int=256, learning_rate:float=1e-3,
                  latent_dim:int=1, hidden_dim:int=50, n_layers:int=2, sliding_window:bool=True,
                  activation:str="LeakyReLU", dropout_ratio:float=0., optimizer:str="Adam", loss:str="MSELoss",

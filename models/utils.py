@@ -1,27 +1,44 @@
+from typing import Optional
 import math
 import torch
 import torch.nn as nn
 
 
-def construct_dense_network(input_dim:int, output_dim:int=None, hidden_dim:int=50, n_layers:int=1, activation:str="LeakyReLU", dropout_ratio:float=0., output_activation:str=None,):
+def construct_dense_network(input_dim:int, output_dim:int=None, hidden_dim:int=50, n_layers:int=1, activation:str="LeakyReLU", dropout_ratio:float=0., output_activation:str=None, use_batch_norm:bool=False, pre_batchnorm:bool=False, n_dropout_layers:Optional[int]=None):
+    if type(hidden_dim)==int:
+        hidden_dim = [hidden_dim] * max(n_layers - 1, 1)
     if output_dim is None:
-        output_dim = hidden_dim
+        output_dim = hidden_dim[-1]
+    if n_dropout_layers is None:
+        n_dropout_layers = n_layers - 1
     if n_layers==1:
         net = [nn.Linear(input_dim, output_dim)]
     else:
-        net = [nn.Linear(input_dim, hidden_dim)]
-        if dropout_ratio>0.:
+        net = [nn.Linear(input_dim, hidden_dim[0])]
+        if pre_batchnorm and use_batch_norm:
+            net.append(nn.BatchNorm1d(hidden_dim[0]))
+        net.append(getattr(nn, activation)())
+        if dropout_ratio>0. and n_dropout_layers>0:
             net.append(nn.Dropout(dropout_ratio))
-        for i in range(n_layers-1):
-            net += [getattr(nn, activation)(),
-                    nn.Linear(hidden_dim, hidden_dim)]
-            if dropout_ratio>0.:
+        if use_batch_norm and not pre_batchnorm:
+            net.append(nn.BatchNorm1d(hidden_dim[0]))
+        for i in range(n_layers-2):
+            net.append(nn.Linear(hidden_dim[i], hidden_dim[i+1]))
+            if use_batch_norm and pre_batchnorm:
+                net.append(nn.BatchNorm1d(hidden_dim[i+1]))
+            net.append(getattr(nn, activation)())
+            if dropout_ratio>0. and i+1 < n_dropout_layers:
                 net.append(nn.Dropout(dropout_ratio))
-        net += [getattr(nn, activation)(),
-                nn.Linear(hidden_dim, output_dim)]
+            if use_batch_norm and not pre_batchnorm:
+                net.append(nn.BatchNorm1d(hidden_dim))
+        net += [nn.Linear(hidden_dim[-1], output_dim)]
     if output_activation is not None:
-        net.append(getattr(nn, output_activation)())
+        if output_activation=="Softmax":
+            net.append(getattr(nn, output_activation)(dim=-1))
+        else:
+            net.append(getattr(nn, output_activation)())
     return nn.Sequential(*net)
+
 
 
 def compute_sample_correlation(x, y):
